@@ -7,6 +7,27 @@ Printrocket allows users to collect & store lists of urls in order to compile in
 ## Authentication
 The Printrocket API requires some basic authentication in the form of a signature hash, which is comprised with at least a **client key**, a **secret key**, and a **nonce**.  Furthermore, any additional parameters (GET or POST) must be included in the signature
 
+### Key Exchange
+New users start out with an arbitrary client key, which can be a simple uuid that you'll generate on your end.  The user then must be forwarded to a url to authorize their client key as follows:
+
+`http://printrocket.com/api/authorize/some-client-key/`
+
+An optional callback can be specified in the form:
+
+`...?callback=http://example.com/mycallback.html`
+
+If the callback is provided, the user will be forwarded to the callback page once they complete authorization.
+
+Once the user has authorized use of the api via their browser, you'll need to retrieve a secret key which you'll use going forward via the following url:
+
+`http://printrocket.com/api/exchange/some-client-key/`
+
+This url, if the user has successfully authorized use of the api, will return json containing the user's secret key. in the format:
+
+`{"status": "ok", "secret_key": "the-users-secret_key"}`
+
+This secret key is then used in all calls going forward along with the client key from before.
+
 ### Signature calculation
 Base strings are calculated by taking the path of the request.  Then, clients must sort the keys of the parameters being sent, and then appending them as you would an http POST string, for example a call to `/lists/` with the following params:
 
